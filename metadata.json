@@ -1,0 +1,7 @@
+{
+  "name": "Kings of Wings",
+  "description": "Full-stack restaurant operating system with customer table ordering, live kitchen pit KDS, floor service, dining room management, inventory procurement, recipe costing, and business intelligence analytics.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
+
