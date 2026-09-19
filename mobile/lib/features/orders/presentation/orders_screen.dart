@@ -3,7 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../app/theme/app_colors.dart';
-import '../orders_provider.dart';
+import 'package:restaurant_mobile/features/orders/presentation/orders_provider.dart';
 import '../domain/order_model.dart';
 import '../../menu/domain/menu_item_model.dart';
 
@@ -168,7 +168,6 @@ class OrdersScreen extends StatelessWidget {
         fg = AppColors.info;
         break;
       case OrderStatus.received:
-      default:
         bg = AppColors.surfaceElevated;
         fg = AppColors.textTertiary;
         break;

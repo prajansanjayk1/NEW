@@ -3,7 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../app/theme/app_colors.dart';
-import '../cart_provider.dart';
+import 'package:restaurant_mobile/features/cart/presentation/cart_provider.dart';
 import '../../menu/domain/menu_item_model.dart';
 import '../../table_session/presentation/table_session_provider.dart';
 import '../../orders/presentation/orders_provider.dart';

@@ -16,7 +16,6 @@ class NfcScreen extends StatefulWidget {
 
 class _NfcScreenState extends State<NfcScreen> with SingleTickerProviderStateMixin {
   late AnimationController _pulseController;
-  bool _isListening = true;
 
   @override
   void initState() {

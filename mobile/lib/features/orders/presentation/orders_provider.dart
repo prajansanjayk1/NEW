@@ -1,4 +1,7 @@
+import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/foundation.dart';
+import 'package:http/http.dart' as http;
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../app/config/app_config.dart';
 import '../../cart/domain/cart_item_model.dart';
@@ -9,6 +12,7 @@ class OrdersProvider extends ChangeNotifier {
   List<OrderModel> _orders = [];
   bool _isLoading = false;
   RealtimeChannel? _realtimeSubscription;
+  Timer? _syncTimer;
 
   List<OrderModel> get orders => _orders;
   bool get isLoading => _isLoading;
@@ -88,9 +92,50 @@ class OrdersProvider extends ChangeNotifier {
       await fetchLiveOrders();
       _subscribeToRealtime();
     }
+    await fetchBackendOrders();
+
+    // Auto-sync with backend every 2s for instant reflection with Web KDS & Supabase
+    _syncTimer = Timer.periodic(const Duration(seconds: 2), (_) {
+      fetchBackendOrders();
+    });
 
     _isLoading = false;
     notifyListeners();
+  }
+
+  Future<void> fetchBackendOrders() async {
+    try {
+      final uri = Uri.parse('${AppConfig.backendApiUrl}/api/orders');
+      final res = await http.get(uri).timeout(const Duration(seconds: 3));
+      if (res.statusCode == 200) {
+        final data = jsonDecode(res.body);
+        if (data['orders'] is List) {
+          final List rawList = data['orders'];
+          if (rawList.isNotEmpty) {
+            final backendOrders = rawList
+                .map((j) => OrderModel.fromJson(j as Map<String, dynamic>))
+                .toList();
+
+            bool changed = backendOrders.length != _orders.length;
+            if (!changed) {
+              for (int i = 0; i < backendOrders.length; i++) {
+                if (backendOrders[i].id != _orders[i].id ||
+                    backendOrders[i].status != _orders[i].status) {
+                  changed = true;
+                  break;
+                }
+              }
+            }
+            if (changed) {
+              _orders = backendOrders;
+              notifyListeners();
+            }
+          }
+        }
+      }
+    } catch (e) {
+      // Backend temporarily unreachable or timeout; keep local state intact
+    }
   }
 
   Future<void> fetchLiveOrders() async {
@@ -199,6 +244,59 @@ class OrdersProvider extends ChangeNotifier {
       }
     }
 
+    // Always sync with backend server for instant reflection across Web KDS & other clients
+    try {
+      final uri = Uri.parse('${AppConfig.backendApiUrl}/api/orders');
+      http.post(
+        uri,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'id': newOrder.id,
+          'ticketNumber': newOrder.ticketNumber,
+          'ticket_number': newOrder.ticketNumber,
+          'restaurantId': restaurantId,
+          'restaurant_id': restaurantId,
+          'channel': channel == SalesChannel.takeaway ? 'TAKEAWAY' : 'DINE_IN',
+          'sales_channel': channel == SalesChannel.takeaway ? 'TAKEAWAY' : 'DINE_IN',
+          'tableNumber': tableNumber,
+          'table_number': tableNumber,
+          'customerName': customerName ?? 'Customer',
+          'customer_name': customerName ?? 'Customer',
+          'customerPhone': customerPhone,
+          'customer_phone': customerPhone,
+          'targetPickupTime': targetPickupTime,
+          'target_pickup_time': targetPickupTime,
+          'subtotal': subtotal,
+          'packagingFee': packagingFee,
+          'packaging_fee': packagingFee,
+          'tax': tax,
+          'total': totalAmount,
+          'totalAmount': totalAmount,
+          'total_amount': totalAmount,
+          'status': 'LOCKED',
+          'paymentStatus': 'PAID',
+          'payment_status': 'PAID',
+          'items': newOrder.items
+              .map((i) => {
+                    'menuItemId': i.menuItemId,
+                    'menu_item_id': i.menuItemId,
+                    'name': i.name,
+                    'quantity': i.quantity,
+                    'unitPrice': i.unitPrice,
+                    'unit_price': i.unitPrice,
+                    'totalPrice': i.unitPrice * i.quantity,
+                    'customization': i.customization,
+                  })
+              .toList(),
+        }),
+      ).catchError((err) {
+        debugPrint('Backend sync error on placeOrder: $err');
+        return http.Response('', 500);
+      });
+    } catch (e) {
+      debugPrint('Backend order dispatch error: $e');
+    }
+
     _orders.insert(0, newOrder);
     notifyListeners();
     return newOrder;
@@ -238,11 +336,27 @@ class OrdersProvider extends ChangeNotifier {
           debugPrint('Error updating order status in Supabase: $e');
         }
       }
+
+      // Sync status change with backend API
+      try {
+        final uri = Uri.parse('${AppConfig.backendApiUrl}/api/orders/$orderId/status');
+        http.patch(
+          uri,
+          headers: {'Content-Type': 'application/json'},
+          body: jsonEncode({'status': newStatus.toDbString()}),
+        ).catchError((err) {
+          debugPrint('Backend sync error on updateOrderStatus: $err');
+          return http.Response('', 500);
+        });
+      } catch (e) {
+        debugPrint('Backend status patch error: $e');
+      }
     }
   }
 
   @override
   void dispose() {
+    _syncTimer?.cancel();
     _realtimeSubscription?.unsubscribe();
     super.dispose();
   }

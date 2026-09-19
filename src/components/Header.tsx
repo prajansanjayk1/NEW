@@ -1,5 +1,5 @@
 import React from 'react';
-import { Users, ShoppingBag, Flame, ChefHat, Bell } from 'lucide-react';
+import { Users, ShoppingBag, Flame, ChefHat, Bell, User, Radio } from 'lucide-react';
 import { motion } from 'motion/react';
 import { AppScreen, SessionParticipant, TableSession, UserRole } from '../types';
 
@@ -10,6 +10,8 @@ interface HeaderProps {
   onOpenCart: () => void;
   onOpenCrew: () => void;
   onOpenService?: () => void;
+  onOpenAuthModal?: () => void;
+  onOpenTablePicker?: () => void;
   isKitchenMode: boolean;
   onToggleKitchenMode: () => void;
   onSwitchToTakeaway?: () => void;
@@ -25,6 +27,8 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenCart,
   onOpenCrew,
   onOpenService,
+  onOpenAuthModal,
+  onOpenTablePicker,
   isKitchenMode,
   onToggleKitchenMode,
   onSwitchToTakeaway,
@@ -69,13 +73,19 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
         </div>
 
-        {/* Live Table Badge */}
-        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#201f20] border border-white/[0.08] shadow-sm flex-shrink-0">
+        {/* Live Table Badge (Clickable to switch table or simulate NFC) */}
+        <button
+          type="button"
+          onClick={onOpenTablePicker}
+          title="Click to Switch Table or Simulate NFC Tap"
+          className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#201f20] hover:bg-[#282627] border border-white/[0.08] hover:border-[#ff5708]/40 transition-all shadow-sm flex-shrink-0 cursor-pointer group"
+        >
           <span className="w-2 h-2 rounded-full bg-[#ff5708] animate-pulse shadow-[0_0_8px_#ff5708]"></span>
-          <span className="font-syne text-[11px] font-extrabold text-[#ffdcbd] uppercase tracking-wider">
+          <span className="font-syne text-[11px] font-extrabold text-[#ffdcbd] group-hover:text-white uppercase tracking-wider">
             T-{session ? session.tableNumber : '18'} · LIVE
           </span>
-        </div>
+          <Radio className="w-3 h-3 text-[#ff7a29] opacity-70 group-hover:opacity-100 hidden sm:inline" />
+        </button>
 
         {/* Action Buttons */}
         <div className="flex items-center gap-1 flex-shrink-0">
@@ -151,13 +161,21 @@ export const Header: React.FC<HeaderProps> = ({
             )}
           </motion.button>
 
-          {/* Customer Avatar */}
-          <div
-            title={currentParticipant ? `${currentParticipant.displayName} (${currentParticipant.role})` : 'Jake Davis'}
-            className="w-7 h-7 rounded-full bg-[#ffb59c] text-[#5c1900] font-bold text-xs flex items-center justify-center flex-shrink-0 ml-0.5 shadow-sm cursor-default"
+          {/* Customer Profile / Supabase Auth Button */}
+          <motion.button
+            whileTap={{ scale: 0.9 }}
+            onClick={onOpenAuthModal}
+            title={currentParticipant ? `${currentParticipant.displayName} (Click to manage Supabase profile)` : 'Customer Sign In'}
+            aria-label="Customer Sign In & Profile"
+            className="flex items-center gap-1.5 p-1 pr-2 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 transition-all cursor-pointer ml-1"
           >
-            {currentParticipant ? currentParticipant.avatarEmoji || currentParticipant.initials : '👑'}
-          </div>
+            <div className="w-6 h-6 rounded-full bg-gradient-to-br from-[#ff5708] to-[#df8600] text-white font-bold text-xs flex items-center justify-center flex-shrink-0 shadow-sm">
+              {currentParticipant ? currentParticipant.avatarEmoji || currentParticipant.initials : '👤'}
+            </div>
+            <span className="text-[11px] font-bold text-white font-['Syne',sans-serif] hidden sm:inline truncate max-w-[80px]">
+              {currentParticipant?.displayName?.split(' ')[0] || 'Sign In'}
+            </span>
+          </motion.button>
         </div>
       </div>
     </header>

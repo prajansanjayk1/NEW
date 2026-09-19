@@ -1,4 +1,4 @@
-import '../menu/domain/menu_item_model.dart';
+import 'package:restaurant_mobile/features/menu/domain/menu_item_model.dart';
 
 class CartCustomization {
   final String portionSize;

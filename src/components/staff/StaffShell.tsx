@@ -26,7 +26,8 @@ import {
   ShieldAlert,
   ShieldCheck,
   CheckSquare,
-  ShoppingBag
+  ShoppingBag,
+  Radio
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
@@ -56,6 +57,7 @@ import { StaffSettingsView } from './StaffSettingsView';
 import { StaffCopilotView } from './StaffCopilotView';
 import { StaffInventoryView } from './StaffInventoryView';
 import { StaffRecipesView } from './StaffRecipesView';
+import { StaffHardwareView } from './StaffHardwareView';
 import { RestaurantSwitcher } from '../saas/RestaurantSwitcher';
 import { RestaurantOnboardingModal } from '../saas/RestaurantOnboardingModal';
 import { PlatformAdminConsole } from '../saas/PlatformAdminConsole';
@@ -242,6 +244,12 @@ export const StaffShell: React.FC<StaffShellProps> = ({
       icon: CheckSquare,
       allowedRoles: ['MANAGER', 'ADMIN'],
     },
+    {
+      tab: 'HARDWARE',
+      label: 'NFC & QR Hardware',
+      icon: Radio,
+      allowedRoles: ['MANAGER', 'ADMIN'],
+    },
   ];
 
   function isTabAllowed(tab: StaffPortalTab, role: UserRole | ExtendedUserRole): boolean {
@@ -346,6 +354,8 @@ export const StaffShell: React.FC<StaffShellProps> = ({
         return <ProductionReadinessView />;
       case 'CHECKLIST':
         return <RestaurantOnboardingChecklistView />;
+      case 'HARDWARE':
+        return <StaffHardwareView tables={tables} userRole={userRole as UserRole} />;
       default:
         return null;
     }

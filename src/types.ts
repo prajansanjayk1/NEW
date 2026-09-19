@@ -464,7 +464,8 @@ export type StaffPortalTab =
   | 'AI_COPILOT'
   | 'PLATFORM'
   | 'READINESS'
-  | 'CHECKLIST';
+  | 'CHECKLIST'
+  | 'HARDWARE';
 
 // Export SaaS & Multi-Tenant Types (Phase 9)
 export * from './types/saas';

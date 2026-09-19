@@ -29,6 +29,7 @@ class RealtimeEventBus {
   private eventListeners: Map<string, Set<Listener<TableSessionEvent>>> = new Map();
   private tableListeners: Set<Listener<RestaurantTable[]>> = new Set();
   private connectionListeners: Set<Listener<ConnectionStatus>> = new Set();
+  private orderChangeListeners: Set<() => void> = new Set();
 
   private supabaseChannelInitialized = false;
   private currentConnectionStatus: ConnectionStatus = 'ONLINE';
@@ -38,6 +39,7 @@ class RealtimeEventBus {
       window.addEventListener('online', () => this.updateConnectionStatus('ONLINE'));
       window.addEventListener('offline', () => this.updateConnectionStatus('OFFLINE'));
       this.initSupabaseChannel();
+      this.initServerEventsStream();
     }
   }
 
@@ -98,6 +100,43 @@ class RealtimeEventBus {
       this.supabaseChannelInitialized = true;
     } catch (err) {
       console.warn('[Supabase Realtime] Channel setup fallback:', err);
+    }
+  }
+
+  /**
+   * Initializes Server-Sent Events stream for instant cross-device synchronization
+   */
+  private initServerEventsStream(): void {
+    if (typeof window === 'undefined' || typeof EventSource === 'undefined') return;
+
+    try {
+      const eventSource = new EventSource('/api/realtime/stream');
+
+      eventSource.onmessage = (event) => {
+        try {
+          const payload = JSON.parse(event.data);
+          if (payload.type === 'ORDER_CREATED') {
+            const order: Order = payload.data;
+            this.notifyOrderCreated(order);
+            this.notifyOrderChanges();
+          } else if (payload.type === 'ORDER_UPDATED') {
+            const order: Order = payload.data;
+            this.notifyOrderStatusUpdated(order.id, order.status);
+            this.notifyOrderChanges();
+          } else if (payload.type === 'SERVICE_REQUEST_CREATED') {
+            const req: ServiceRequest = payload.data;
+            this.notifyServiceRequestCreated(req);
+          }
+        } catch {
+          // Ignore heartbeat or non-JSON comments
+        }
+      };
+
+      eventSource.onerror = () => {
+        // Browser EventSource automatically handles reconnection
+      };
+    } catch (err) {
+      console.warn('[Realtime EventSource] Server stream connection warning:', err);
     }
   }
 
@@ -182,6 +221,23 @@ class RealtimeEventBus {
 
   emitKitchenTicketUpdate(orderId: string, status: OrderStatus): void {
     this.notifyOrderStatusUpdated(orderId, status);
+  }
+
+  subscribeToOrderChanges(callback: () => void): () => void {
+    this.orderChangeListeners.add(callback);
+    return () => {
+      this.orderChangeListeners.delete(callback);
+    };
+  }
+
+  notifyOrderChanges(): void {
+    this.orderChangeListeners.forEach((cb) => {
+      try {
+        cb();
+      } catch (e) {
+        console.error('Order change listener error', e);
+      }
+    });
   }
 
   // -------------------------------------------------------------------------

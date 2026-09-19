@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../app/theme/app_colors.dart';
-import '../concierge_provider.dart';
+import 'package:restaurant_mobile/features/concierge/presentation/concierge_provider.dart';
 import '../../menu/presentation/menu_provider.dart';
 
 class ConciergeScreen extends StatefulWidget {

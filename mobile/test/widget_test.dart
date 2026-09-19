@@ -1,6 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:restaurant_mobile/features/menu/domain/menu_item_model.dart';
-import 'package:restaurant_mobile/features/cart/domain/cart_item_model.dart';
 import 'package:restaurant_mobile/features/cart/presentation/cart_provider.dart';
 
 void main() {

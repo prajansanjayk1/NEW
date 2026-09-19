@@ -6,7 +6,6 @@ import '../../../app/theme/app_colors.dart';
 import '../../auth/presentation/auth_provider.dart';
 import '../../orders/presentation/orders_provider.dart';
 import '../../orders/domain/order_model.dart';
-import '../../menu/domain/menu_item_model.dart';
 
 class StaffShellScreen extends StatefulWidget {
   const StaffShellScreen({super.key});

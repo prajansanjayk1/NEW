@@ -16,6 +16,8 @@ interface StaffAuthContextType {
   isLoading: boolean;
   loginWithEmail: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
   loginWithPin: (role: UserRole | ExtendedUserRole, pin: string) => Promise<{ success: boolean; error?: string }>;
+  loginWithQrBadge: (badgeToken: string) => Promise<{ success: boolean; error?: string }>;
+  loginWithNfcTag: (tagId: string) => Promise<{ success: boolean; error?: string }>;
   logout: () => Promise<void>;
   switchRole: (role: UserRole | ExtendedUserRole) => Promise<void>;
   switchRestaurant: (restaurantId: string) => Promise<{ success: boolean; error?: string }>;
@@ -149,6 +151,38 @@ export const StaffAuthProvider: React.FC<{ children: ReactNode }> = ({ children 
     }
   }, []);
 
+  const loginWithQrBadge = useCallback(async (badgeToken: string) => {
+    setIsLoading(true);
+    try {
+      const res = await staffAuthService.authenticateStaffWithQrBadge(badgeToken);
+      if (res.success && res.staff) {
+        setCurrentStaff(res.staff);
+        const list = await tenantService.getUserMemberships(res.staff.id, res.staff.role as ExtendedUserRole);
+        setMemberships(list);
+        return { success: true };
+      }
+      return { success: false, error: res.error || 'QR authentication failed' };
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  const loginWithNfcTag = useCallback(async (tagId: string) => {
+    setIsLoading(true);
+    try {
+      const res = await staffAuthService.authenticateStaffWithNfcTag(tagId);
+      if (res.success && res.staff) {
+        setCurrentStaff(res.staff);
+        const list = await tenantService.getUserMemberships(res.staff.id, res.staff.role as ExtendedUserRole);
+        setMemberships(list);
+        return { success: true };
+      }
+      return { success: false, error: res.error || 'NFC authentication failed' };
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
   const logout = useCallback(async () => {
     setIsLoading(true);
     try {
@@ -201,6 +235,8 @@ export const StaffAuthProvider: React.FC<{ children: ReactNode }> = ({ children 
         isLoading,
         loginWithEmail,
         loginWithPin,
+        loginWithQrBadge,
+        loginWithNfcTag,
         logout,
         switchRole,
         switchRestaurant,
@@ -224,6 +260,8 @@ const defaultStaffAuthContext: StaffAuthContextType = {
   isLoading: false,
   loginWithEmail: async () => ({ success: false, error: 'Auth provider not initialized' }),
   loginWithPin: async () => ({ success: false, error: 'Auth provider not initialized' }),
+  loginWithQrBadge: async () => ({ success: false, error: 'Auth provider not initialized' }),
+  loginWithNfcTag: async () => ({ success: false, error: 'Auth provider not initialized' }),
   logout: async () => {},
   switchRole: async () => {},
   switchRestaurant: async () => ({ success: false }),

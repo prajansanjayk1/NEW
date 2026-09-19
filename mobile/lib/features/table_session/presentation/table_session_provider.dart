@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../menu/domain/menu_item_model.dart';
-import '../../orders/domain/order_model.dart';
 
 enum SessionStatus { lobby, active, ordering, billing, closed }
 

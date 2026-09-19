@@ -3,7 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../app/theme/app_colors.dart';
-import '../auth_provider.dart';
+import 'package:restaurant_mobile/features/auth/presentation/auth_provider.dart';
 import '../domain/user_model.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -58,7 +58,6 @@ class _LoginScreenState extends State<LoginScreen> {
           context.go('/manager');
           break;
         case UserRole.customer:
-        default:
           context.go('/home');
           break;
       }
@@ -118,11 +117,11 @@ class _LoginScreenState extends State<LoginScreen> {
               if (auth.errorMessage != null)
                 Container(
                   padding: const EdgeInsets.all(12),
-                  margin: const EdgeInsets.bottom(20),
+                  margin: const EdgeInsets.only(bottom: 20),
                   decoration: BoxDecoration(
                     color: AppColors.error.withOpacity(0.15),
                     borderRadius: BorderRadius.circular(AppRadius.md),
-                    border: Border.padLeft(const BorderSide(color: AppColors.error, width: 3)),
+                    border: const Border(left: BorderSide(color: AppColors.error, width: 3)),
                   ),
                   child: Row(
                     children: [

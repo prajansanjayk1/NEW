@@ -444,6 +444,70 @@ export const staffAuthService = {
   },
 
   /**
+   * Authenticate staff via QR Badge Token
+   */
+  async authenticateStaffWithQrBadge(
+    badgeToken: string
+  ): Promise<{ success: boolean; staff?: StaffProfile; error?: string }> {
+    const cleanToken = badgeToken.trim().toUpperCase();
+    const matched = DEFAULT_STAFF_MEMBERS.find((s) => {
+      const firstName = s.displayName.split(' ')[0].toUpperCase();
+      const expectedToken = `STAFF-QR-${firstName}`;
+      return cleanToken.includes(expectedToken) || cleanToken.includes(s.id.toUpperCase()) || cleanToken === s.id.toUpperCase() || cleanToken.includes(firstName);
+    });
+
+    if (matched) {
+      localStorage.setItem('kow_staff_profile', JSON.stringify(matched));
+      await auditService.logEvent({
+        restaurantId: matched.restaurantId,
+        actorId: matched.id,
+        actorRole: matched.role,
+        action: 'STAFF_LOGIN_QR_BADGE',
+        entityType: 'STAFF',
+        entityId: matched.id,
+      });
+      return { success: true, staff: matched };
+    }
+
+    return {
+      success: false,
+      error: `Invalid or unrecognized staff QR badge token: "${badgeToken}".`,
+    };
+  },
+
+  /**
+   * Authenticate staff via NFC Badge / Card Tap
+   */
+  async authenticateStaffWithNfcTag(
+    nfcTagId: string
+  ): Promise<{ success: boolean; staff?: StaffProfile; error?: string }> {
+    const cleanTag = nfcTagId.trim().toUpperCase();
+    const matched = DEFAULT_STAFF_MEMBERS.find((s) => {
+      const firstName = s.displayName.split(' ')[0].toUpperCase();
+      const expectedNfc = `NFC-STAFF-${firstName}`;
+      return cleanTag.includes(expectedNfc) || cleanTag.includes(s.id.toUpperCase()) || cleanTag === s.id.toUpperCase() || cleanTag.includes(firstName);
+    });
+
+    if (matched) {
+      localStorage.setItem('kow_staff_profile', JSON.stringify(matched));
+      await auditService.logEvent({
+        restaurantId: matched.restaurantId,
+        actorId: matched.id,
+        actorRole: matched.role,
+        action: 'STAFF_LOGIN_NFC_BADGE',
+        entityType: 'STAFF',
+        entityId: matched.id,
+      });
+      return { success: true, staff: matched };
+    }
+
+    return {
+      success: false,
+      error: `Unregistered NFC badge card ID: "${nfcTagId}". Please assign this tag in Admin/Staff settings.`,
+    };
+  },
+
+  /**
    * Get all authorized restaurant memberships for current authenticated user
    */
   async getAuthorizedMemberships(

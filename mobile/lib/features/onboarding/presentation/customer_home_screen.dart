@@ -3,7 +3,6 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../app/theme/app_colors.dart';
-import '../../auth/presentation/auth_provider.dart';
 import '../../restaurants/presentation/restaurant_provider.dart';
 import '../../menu/presentation/menu_provider.dart';
 import '../../menu/domain/menu_item_model.dart';
@@ -15,7 +14,6 @@ class CustomerHomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final auth = context.watch<AuthProvider>();
     final restProv = context.watch<RestaurantProvider>();
     final menuProv = context.watch<MenuProvider>();
     final cartProv = context.watch<CartProvider>();
@@ -100,7 +98,7 @@ class CustomerHomeScreen extends StatelessWidget {
                   // Active Table Session Alert (if dine-in)
                   if (tableProv.hasActiveSession)
                     Container(
-                      margin: const EdgeInsets.bottom(16),
+                      margin: const EdgeInsets.only(bottom: 16),
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
                         color: AppColors.primary.withOpacity(0.15),

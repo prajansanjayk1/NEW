@@ -62,6 +62,28 @@ export const useTableSession = () => {
     };
   }, [session.id]);
 
+  // Synchronize table session from URL query parameters (e.g. ?table=04 or ?nfc=...)
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const params = new URLSearchParams(window.location.search);
+    const tableParam = params.get('table');
+    if (tableParam && tableParam !== session.tableNumber) {
+      const foundTable = tables.find((t) => t.tableNumber === tableParam);
+      if (foundTable) {
+        const newSession: TableSession = {
+          ...session,
+          id: `session-tbl${tableParam}-live`,
+          tableId: foundTable.id,
+          tableNumber: tableParam,
+          sessionToken: `#KW-${tableParam}${Math.floor(100 + Math.random() * 900)}`,
+          status: 'ORDERING',
+        };
+        setSession(newSession);
+        sessionStorageService.saveSession(newSession);
+      }
+    }
+  }, [tables, session.tableNumber]);
+
   // Join table action
   const joinSession = useCallback((displayName: string, avatarEmoji: string = '🍗') => {
     const { session: updatedSession, participant: newParticipant } = tableSessionService.joinTableSession(

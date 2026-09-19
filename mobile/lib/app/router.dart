@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../features/auth/presentation/auth_provider.dart';
 import '../../features/auth/domain/user_model.dart';
@@ -44,7 +43,6 @@ GoRouter createRouter(AuthProvider authProvider) {
           case UserRole.owner:
             return '/manager';
           case UserRole.customer:
-          default:
             return '/home';
         }
       }

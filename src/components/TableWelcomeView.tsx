@@ -13,7 +13,10 @@ import {
   ShieldCheck,
   Zap,
   Info,
-  Bell
+  Bell,
+  Radio,
+  User,
+  HelpCircle
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { INITIAL_TABLE_INFO } from '../data/mockData';
@@ -24,6 +27,9 @@ interface TableWelcomeViewProps {
   onOpenCrew: () => void;
   onNavigateToStatus: () => void;
   onOpenService?: () => void;
+  onOpenAuthModal?: () => void;
+  onSelectTable?: (tbl: string) => void;
+  onOpenOnboardingTour?: () => void;
   activeOrderExists: boolean;
   crewCount?: number;
   session?: TableSession;
@@ -34,6 +40,9 @@ export const TableWelcomeView: React.FC<TableWelcomeViewProps> = ({
   onOpenCrew,
   onNavigateToStatus,
   onOpenService,
+  onOpenAuthModal,
+  onSelectTable,
+  onOpenOnboardingTour,
   activeOrderExists,
   crewCount = 3,
   session,
@@ -78,6 +87,42 @@ export const TableWelcomeView: React.FC<TableWelcomeViewProps> = ({
           <span>TAP {token}</span>
         </div>
       </motion.div>
+
+      {/* Table NFC Puck Tap Simulation & Tour Trigger */}
+      <div className="bg-[#181617] border border-white/10 rounded-2xl p-3 space-y-2.5 shadow-md">
+        <div className="flex items-center justify-between text-xs">
+          <div className="flex items-center gap-1.5 font-['Syne',sans-serif] font-bold text-white uppercase">
+            <Radio className="w-3.5 h-3.5 text-[#ff5708]" />
+            <span>Simulate Table NFC Puck Tap</span>
+          </div>
+          {onOpenOnboardingTour && (
+            <button
+              type="button"
+              onClick={onOpenOnboardingTour}
+              className="text-[10px] text-[#ff7a29] hover:underline font-bold flex items-center gap-1 font-['Syne',sans-serif] uppercase"
+            >
+              <HelpCircle className="w-3 h-3" />
+              <span>Full Tour</span>
+            </button>
+          )}
+        </div>
+        <div className="grid grid-cols-6 gap-1.5">
+          {['01', '04', '07', '12', '18', '21'].map((tbl) => (
+            <button
+              key={tbl}
+              type="button"
+              onClick={() => onSelectTable && onSelectTable(tbl)}
+              className={`py-1.5 rounded-lg text-xs font-mono font-bold transition-all text-center ${
+                tableNum === tbl
+                  ? 'bg-[#ff5708] text-white shadow-md'
+                  : 'bg-[#201d1e] text-[#a0948e] hover:text-white border border-white/5 hover:border-white/20'
+              }`}
+            >
+              T-{tbl}
+            </button>
+          ))}
+        </div>
+      </div>
 
       {/* Hero Imagery Stage */}
       <div className="relative w-full rounded-3xl overflow-hidden bg-[#0e0e0f] border border-white/[0.08] shadow-2xl flex flex-col justify-end min-h-[360px] group">
@@ -133,6 +178,18 @@ export const TableWelcomeView: React.FC<TableWelcomeViewProps> = ({
           <span className="drop-shadow-sm font-black">Start Ordering</span>
           <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
         </motion.button>
+
+        {/* Customer Auth & Loyalty Points Shortcut */}
+        {onOpenAuthModal && (
+          <button
+            type="button"
+            onClick={onOpenAuthModal}
+            className="w-full py-2.5 px-4 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-bold text-[#e5beb2] hover:text-white font-['Syne',sans-serif] uppercase tracking-wider flex items-center justify-center gap-2 transition-all cursor-pointer"
+          >
+            <User className="w-3.5 h-3.5 text-[#ff5708]" />
+            <span>Sign In with Supabase / Loyalty Account</span>
+          </button>
+        )}
 
         {/* Live Active Order Quick Link (if in progress) */}
         {activeOrderExists && (

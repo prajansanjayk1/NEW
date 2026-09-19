@@ -11,19 +11,33 @@ export const useOrders = (tableNumber: string = '18') => {
     return sessionStorageService.loadOrders() || [INITIAL_ACTIVE_ORDER];
   });
 
-  // Sync to persistence
-  useEffect(() => {
-    sessionStorageService.saveOrders(orders);
-    realtimeService.notifyOrdersUpdate(`sess-t${tableNumber}-active`, orders);
-  }, [orders, tableNumber]);
+  // Reusable live orders refresher
+  const refreshLiveOrders = useCallback(() => {
+    fetch('/api/orders')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data && data.success && Array.isArray(data.orders) && data.orders.length > 0) {
+          setOrders(data.orders);
+        }
+      })
+      .catch(() => {
+        // Fallback to local session storage
+      });
+  }, []);
 
-  // Subscribe to real-time order updates
+  // Fetch on mount and subscribe to realtime order stream events
   useEffect(() => {
-    const unsub = realtimeService.subscribeToOrders(`sess-t${tableNumber}-active`, (updated) => {
-      setOrders(updated);
+    refreshLiveOrders();
+    const unsub = realtimeService.subscribeToOrderChanges(() => {
+      refreshLiveOrders();
     });
     return unsub;
-  }, [tableNumber]);
+  }, [refreshLiveOrders]);
+
+  // Sync to local session persistence
+  useEffect(() => {
+    sessionStorageService.saveOrders(orders);
+  }, [orders]);
 
   const placeOrder = useCallback(
     (
@@ -40,6 +54,14 @@ export const useOrders = (tableNumber: string = '18') => {
         tableNumber
       );
       setOrders((prev) => [...prev, newOrder]);
+
+      // Sync with hosted backend API & Supabase
+      fetch('/api/orders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newOrder),
+      }).catch((err) => console.warn('[useOrders] Order sync error:', err));
+
       return newOrder;
     },
     [tableNumber]
@@ -59,6 +81,13 @@ export const useOrders = (tableNumber: string = '18') => {
         return order;
       })
     );
+
+    // Sync status change with hosted backend & Supabase
+    fetch(`/api/orders/${orderId}/status`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status: newStatus }),
+    }).catch((err) => console.warn('[useOrders] Status sync error:', err));
   }, []);
 
   const activeOrder = useMemo(() => {

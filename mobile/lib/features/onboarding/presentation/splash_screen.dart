@@ -58,7 +58,6 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
           context.go('/manager');
           break;
         case UserRole.customer:
-        default:
           context.go('/home');
           break;
       }

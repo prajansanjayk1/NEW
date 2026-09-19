@@ -208,17 +208,21 @@ export const KitchenDisplaySystem: React.FC<KitchenDisplaySystemProps> = ({
                     <div>
                       <div className="font-syne text-xs font-bold text-white flex items-center gap-1.5">
                         <span className="px-1.5 py-0.2 rounded bg-[#ff5708] text-[#511500] font-black text-[10px]">
-                          {item.customization.portionSize || `${item.quantity}x`}
+                          {typeof item.customization === 'object' && item.customization?.portionSize ? item.customization.portionSize : `${item.quantity}x`}
                         </span>
                         <span>{item.name}</span>
                       </div>
                       <div className="font-sans text-[11px] text-[#ffb86d] mt-0.5">
-                        {item.customization.heatLevel} · {item.customization.styleCut}
+                        {typeof item.customization === 'string'
+                          ? item.customization
+                          : [item.customization?.heatLevel, item.customization?.styleCut].filter(Boolean).join(' · ') || 'Standard Prep'}
                       </div>
-                      <div className="font-sans text-[11px] text-[#ac897e]">
-                        Dip: {item.customization.dip}
-                      </div>
-                      {item.customization.extraNotes && (
+                      {typeof item.customization === 'object' && item.customization?.dip && (
+                        <div className="font-sans text-[11px] text-[#ac897e]">
+                          Dip: {item.customization.dip}
+                        </div>
+                      )}
+                      {typeof item.customization === 'object' && item.customization?.extraNotes && (
                         <div className="font-sans text-[10px] text-[#ff5449] italic">
                           Note: {item.customization.extraNotes}
                         </div>

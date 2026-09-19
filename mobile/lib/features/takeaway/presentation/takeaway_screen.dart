@@ -40,7 +40,6 @@ class _TakeawayScreenState extends State<TakeawayScreen> {
   @override
   Widget build(BuildContext context) {
     final cart = context.watch<CartProvider>();
-    final menu = context.watch<MenuProvider>();
     final rest = context.watch<RestaurantProvider>();
     final orders = context.watch<OrdersProvider>();
 
