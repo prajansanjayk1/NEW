@@ -11,7 +11,7 @@ import {
 } from 'lucide-react';
 import { motion } from 'motion/react';
 import { CrewMember, SessionParticipant, TableSession } from '../types';
-import { INITIAL_TABLE_INFO } from '../data/mockData';
+import { DEMO_INITIAL_TABLE_INFO } from '../data/mockData';
 
 interface CrewModalProps {
   isOpen: boolean;
@@ -42,8 +42,8 @@ export const CrewModal: React.FC<CrewModalProps> = ({
     setNewFriendName('');
   };
 
-  const token = session?.sessionToken || INITIAL_TABLE_INFO.sessionToken;
-  const tableNum = session?.tableNumber || INITIAL_TABLE_INFO.tableNumber;
+  const token = session?.sessionToken || DEMO_INITIAL_TABLE_INFO.sessionToken;
+  const tableNum = session?.tableNumber || DEMO_INITIAL_TABLE_INFO.tableNumber;
 
   const handleCopyLink = () => {
     navigator.clipboard.writeText(`https://kingsofwings.menu/table${tableNum}?token=${token}`).catch(() => {});

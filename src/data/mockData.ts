@@ -1,6 +1,6 @@
 import { MenuItem, Order, CrewMember, ServiceRequest } from '../types';
 
-export const INITIAL_TABLE_INFO = {
+export const DEMO_INITIAL_TABLE_INFO = {
   tableNumber: '18',
   section: 'Section A',
   zone: 'Zone A',
@@ -13,13 +13,13 @@ export const INITIAL_TABLE_INFO = {
   scovilleMaxShu: 850000,
 };
 
-export const INITIAL_CREW: CrewMember[] = [
+export const DEMO_INITIAL_CREW: CrewMember[] = [
   { id: '1', name: 'Jake Davis', initials: 'JD', color: 'bg-primary text-on-primary', isHost: true, itemCount: 1 },
   { id: '2', name: 'Aria Miller', initials: 'AM', color: 'bg-secondary text-on-secondary', itemCount: 1 },
   { id: '3', name: 'Rohan Kumar', initials: 'RK', color: 'bg-tertiary-container text-white', itemCount: 1 },
 ];
 
-export const MENU_ITEMS: MenuItem[] = [
+export const DEMO_MENU_ITEMS: MenuItem[] = [
   {
     id: 'wings-firecracker',
     name: 'Firecracker Wings',
@@ -217,7 +217,7 @@ export const MENU_ITEMS: MenuItem[] = [
   }
 ];
 
-export const INITIAL_ACTIVE_ORDER: Order = {
+export const DEMO_INITIAL_ACTIVE_ORDER: Order = {
   id: 'order-k184',
   ticketNumber: 'TICKET #K184',
   tableNumber: '18',

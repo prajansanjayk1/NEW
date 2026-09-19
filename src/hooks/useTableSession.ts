@@ -11,9 +11,9 @@ import {
 } from '../types';
 import { 
   tableSessionService, 
-  INITIAL_TABLE_SESSION, 
-  FLAGSHIP_RESTAURANT, 
-  RESTAURANT_TABLES 
+  DEMO_INITIAL_TABLE_SESSION, 
+  DEMO_FLAGSHIP_RESTAURANT, 
+  DEMO_RESTAURANT_TABLES 
 } from '../services/tableSessionService';
 import { sessionStorageService } from '../services/sessionStorageService';
 import { realtimeService } from '../services/realtimeService';
@@ -25,11 +25,11 @@ export const useTableSession = () => {
 
   // Load from persistent cache or default
   const [session, setSession] = useState<TableSession>(() => {
-    return sessionStorageService.loadSession() || INITIAL_TABLE_SESSION;
+    return sessionStorageService.loadSession() || DEMO_INITIAL_TABLE_SESSION;
   });
 
   const [currentParticipant, setCurrentParticipant] = useState<SessionParticipant | null>(() => {
-    return sessionStorageService.loadParticipant() || INITIAL_TABLE_SESSION.participants[0];
+    return sessionStorageService.loadParticipant() || DEMO_INITIAL_TABLE_SESSION.participants[0];
   });
 
   const [userRole, setUserRole] = useState<UserRole>(() => {
@@ -132,8 +132,8 @@ export const useTableSession = () => {
   // Reset demo session
   const resetDemoSession = useCallback(() => {
     sessionStorageService.clearAll();
-    setSession(INITIAL_TABLE_SESSION);
-    setCurrentParticipant(INITIAL_TABLE_SESSION.participants[0]);
+    setSession(DEMO_INITIAL_TABLE_SESSION);
+    setCurrentParticipant(DEMO_INITIAL_TABLE_SESSION.participants[0]);
     setUserRole('CUSTOMER');
     setSessionError(null);
   }, []);

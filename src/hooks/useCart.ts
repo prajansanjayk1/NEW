@@ -27,7 +27,7 @@ export const useCart = (currentParticipant?: SessionParticipant | null) => {
         customization,
         qty,
         activeParticipant,
-        activeParticipant ? activeParticipant.displayName : 'Jake Davis (You)'
+        activeParticipant ? activeParticipant.displayName : 'You'
       );
       setCart((prev) => [...prev, newItem]);
     },

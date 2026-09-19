@@ -1,9 +1,9 @@
 import { useState, useCallback } from 'react';
 import { CrewMember } from '../types';
-import { INITIAL_CREW } from '../data/mockData';
+import { DEMO_INITIAL_CREW } from '../data/mockData';
 
 export const useCrew = () => {
-  const [crew, setCrew] = useState<CrewMember[]>(INITIAL_CREW);
+  const [crew, setCrew] = useState<CrewMember[]>(DEMO_INITIAL_CREW);
   const [isCrewOpen, setIsCrewOpen] = useState(false);
 
   const inviteFriend = useCallback((name: string) => {

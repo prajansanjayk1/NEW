@@ -21,7 +21,7 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { MenuItem, CustomizationOption, HeatLevel, CartItem, SessionParticipant, MenuCategory, MenuItemOption } from '../types';
-import { MENU_ITEMS, INITIAL_CREW } from '../data/mockData';
+import { DEMO_MENU_ITEMS, DEMO_INITIAL_CREW } from '../data/mockData';
 import { ItemCustomizerModal } from './ItemCustomizerModal';
 import { restaurantDataService } from '../services/restaurantDataService';
 import { formatCurrencyMajor } from '../utils/currency';
@@ -45,7 +45,7 @@ export const ExploreMenuView: React.FC<ExploreMenuViewProps> = ({
   participants = [],
   tableNumber = '18',
 }) => {
-  const [menuItems, setMenuItems] = useState<MenuItem[]>(MENU_ITEMS);
+  const [menuItems, setMenuItems] = useState<MenuItem[]>(DEMO_MENU_ITEMS);
   const [categories, setCategories] = useState<MenuCategory[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>('Wings');
   const [searchQuery, setSearchQuery] = useState('');
@@ -89,7 +89,7 @@ export const ExploreMenuView: React.FC<ExploreMenuViewProps> = ({
     return (
       menuItems.find((m) => m?.name?.includes('Firecracker') || m?.id === 'wings-firecracker') ||
       menuItems[0] ||
-      MENU_ITEMS[0]
+      DEMO_MENU_ITEMS[0]
     );
   }, [menuItems]);
 
@@ -147,7 +147,7 @@ export const ExploreMenuView: React.FC<ExploreMenuViewProps> = ({
   const cartItemCount = cart.reduce((sum, item) => sum + item.quantity, 0);
   const latestCartItem = cart.length > 0 ? (cart[cart.length - 1]?.name || 'Item') : '';
 
-  const activeParticipants = participants.length > 0 ? participants : INITIAL_CREW;
+  const activeParticipants = participants.length > 0 ? participants : DEMO_INITIAL_CREW;
 
   return (
     <motion.div 

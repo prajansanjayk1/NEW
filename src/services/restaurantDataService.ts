@@ -6,7 +6,7 @@
  *     - SupabaseRestaurantDataService
  *     - DemoRestaurantDataService
  * - Section 3: Connects to restaurant 7bd24e21-8fd0-46c2-ac57-1b30838d1460 (WingHouse)
- * - Section 4: Connects menu_categories, menu_items, menu_item_options
+ * - Section 4: Connects menu_categories, DEMO_MENU_ITEMS, menu_item_options
  * - Section 5: Centralized formatCurrencyMinor price handling
  * - Section 6: RPC get_table_session, join_table_session
  * - Section 7: Clearly separated DEMO SESSION vs REAL SESSION
@@ -44,8 +44,8 @@ import {
   TableUtilizationStat,
 } from '../types';
 import { getSupabaseClient, isSupabaseConfigured, getActiveBackendMode } from './supabaseClient';
-import { FLAGSHIP_RESTAURANT, RESTAURANT_TABLES, INITIAL_TABLE_SESSION } from './tableSessionService';
-import { MENU_ITEMS, INITIAL_ACTIVE_ORDER, INITIAL_SERVICE_REQUESTS } from '../data/mockData';
+import { DEMO_FLAGSHIP_RESTAURANT, DEMO_RESTAURANT_TABLES, DEMO_INITIAL_TABLE_SESSION } from './tableSessionService';
+import { DEMO_MENU_ITEMS, DEMO_INITIAL_ACTIVE_ORDER, INITIAL_SERVICE_REQUESTS } from '../data/mockData';
 import { calculateAuthoritativeOrder, verifyAndRegisterIdempotencyKey } from './pricingService';
 import { formatCurrencyMinor, minorToMajor, majorToMinor } from '../utils/currency';
 import { auditService } from './auditService';
@@ -138,17 +138,17 @@ export interface IRestaurantDataService {
 // 1. DEMO IMPLEMENTATION (Section 21 & Section 22: Preserves full demo mode)
 // ---------------------------------------------------------------------------
 class DemoStore {
-  restaurant: Restaurant = { ...FLAGSHIP_RESTAURANT };
-  tables: RestaurantTable[] = [...RESTAURANT_TABLES];
+  restaurant: Restaurant = { ...DEMO_FLAGSHIP_RESTAURANT };
+  tables: RestaurantTable[] = [...DEMO_RESTAURANT_TABLES];
   sessions: Map<string, TableSession> = new Map();
-  menuItems: MenuItem[] = [...MENU_ITEMS];
-  orders: Order[] = [INITIAL_ACTIVE_ORDER];
+  menuItems: MenuItem[] = [...DEMO_MENU_ITEMS];
+  orders: Order[] = [DEMO_INITIAL_ACTIVE_ORDER];
   kitchenTickets: KitchenTicket[] = [];
   serviceRequests: ServiceRequest[] = [...INITIAL_SERVICE_REQUESTS];
   bills: Map<string, Bill> = new Map();
 
   constructor() {
-    this.sessions.set(INITIAL_TABLE_SESSION.id, { ...INITIAL_TABLE_SESSION });
+    this.sessions.set(DEMO_INITIAL_TABLE_SESSION.id, { ...DEMO_INITIAL_TABLE_SESSION });
     this.kitchenTickets = this.orders.map((ord) => ({
       id: `tkt-${ord.id}`,
       restaurantId: this.restaurant.id,
@@ -208,7 +208,7 @@ export class DemoRestaurantDataService implements IRestaurantDataService {
     const stored = sessionStorageService.loadSession();
     if (stored) return { isValid: true, session: stored, isDemo: true };
 
-    const demo = this.store.sessions.get('sess-t18-active') || INITIAL_TABLE_SESSION;
+    const demo = this.store.sessions.get('sess-t18-active') || DEMO_INITIAL_TABLE_SESSION;
     return { isValid: true, session: demo, isDemo: true };
   }
 
@@ -218,7 +218,7 @@ export class DemoRestaurantDataService implements IRestaurantDataService {
     avatarEmoji: string = '🍗'
   ): Promise<{ session: TableSession; participant: SessionParticipant; isDemo?: boolean }> {
     const sessionRes = await this.getTableSession(token);
-    const session = sessionRes.session || INITIAL_TABLE_SESSION;
+    const session = sessionRes.session || DEMO_INITIAL_TABLE_SESSION;
 
     const initials = displayName.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2) || 'D';
     const colors = ['bg-[#ff5708] text-[#511500]', 'bg-[#df8600] text-[#4d2b00]', 'bg-[#ff5449] text-white', 'bg-[#ffb86d] text-[#492900]'];
@@ -608,15 +608,7 @@ export class DemoRestaurantDataService implements IRestaurantDataService {
       .sort((a, b) => b.quantitySold - a.quantitySold);
 
     // Hourly breakdown
-    const hourBuckets: Record<string, { count: number; rev: number }> = {
-      '12:00': { count: 3, rev: 3450 },
-      '13:00': { count: 6, rev: 7820 },
-      '14:00': { count: 4, rev: 4900 },
-      '18:00': { count: 8, rev: 11400 },
-      '19:00': { count: 12, rev: 16800 },
-      '20:00': { count: 15, rev: 21500 },
-      '21:00': { count: 9, rev: 12300 },
-    };
+    const hourBuckets: Record<string, { count: number; rev: number }> = {};
 
     const hourlyOrders: HourlyOrderStat[] = Object.entries(hourBuckets).map(([hour, data]) => ({
       hour,
@@ -697,18 +689,19 @@ export class SupabaseRestaurantDataService implements IRestaurantDataService {
       if (data && !error) {
         return {
           id: data.id,
-          name: data.name || 'WingHouse',
-          slug: data.slug || 'winghouse',
-          logo: data.logo_url || FLAGSHIP_RESTAURANT.logo,
+          name: data.name || 'Restaurant',
+          slug: data.slug || 'restaurant',
+          logo: data.logo_url || DEMO_FLAGSHIP_RESTAURANT.logo,
           timezone: data.timezone || 'Asia/Kolkata',
           currency: data.currency || 'INR',
-          currencySymbol: data.currency === 'INR' || !data.currency ? '₹' : '$',
-          branch: 'Downtown Flagship',
-          address: data.address || 'Plot 42, Smoky Boulevard, Culinary District',
-          wifiSsid: 'KingsOfWings_5G',
-          wifiPassword: 'SmokyGlaze2024',
-          settings: {
-            gstPercent: 5,
+          currencySymbol: data.currency_symbol || (data.currency === 'INR' || !data.currency ? '₹' : '$'),
+          branch: data.branch || '',
+          address: data.address || '',
+          wifiSsid: data.wifi_ssid || '',
+          wifiPassword: data.wifi_password || '',
+          branding: data.branding || null,
+          settings: data.settings || {
+            gstPercent: data.gst_percent || 5,
             allowEqualSplit: true,
             allowItemSplit: true,
             requireHostApproval: false,
@@ -748,7 +741,7 @@ export class SupabaseRestaurantDataService implements IRestaurantDataService {
 
       // 2. Fetch items
       const { data: itemData, error: itemError } = await supabase
-        .from('menu_items')
+        .from('DEMO_MENU_ITEMS')
         .select('*')
         .eq('restaurant_id', restaurantId)
         .order('sort_order');
@@ -817,7 +810,7 @@ export class SupabaseRestaurantDataService implements IRestaurantDataService {
         const payload: Record<string, any> = {};
         if (typeof itemUpdate.available === 'boolean') payload.is_available = itemUpdate.available;
         if (typeof itemUpdate.price === 'number') payload.price_minor = majorToMinor(itemUpdate.price);
-        await supabase.from('menu_items').update(payload).eq('id', itemUpdate.id);
+        await supabase.from('DEMO_MENU_ITEMS').update(payload).eq('id', itemUpdate.id);
       } catch (err) {
         console.warn('[SupabaseService] updateMenuItem error:', err);
       }
@@ -884,7 +877,7 @@ export class SupabaseRestaurantDataService implements IRestaurantDataService {
 
         if (data && !error) {
           const sessionRes = await this.getTableSession(token);
-          const session = sessionRes.session || INITIAL_TABLE_SESSION;
+          const session = sessionRes.session || DEMO_INITIAL_TABLE_SESSION;
           const participant: SessionParticipant = {
             id: data.id || data.participant_id || `part-${Date.now()}`,
             sessionId: session.id,
@@ -946,11 +939,11 @@ export class SupabaseRestaurantDataService implements IRestaurantDataService {
       id: generatedId,
       ticketNumber,
       tableNumber: session.tableNumber,
-      section: 'Section A',
+      section: '',
       status: 'LOCKED',
-      station: 'Fry Station 03',
-      pitmaster: 'Marco',
-      oilTempF: 375,
+      station: '',
+      pitmaster: undefined,
+      oilTempF: undefined,
       items: cartItems,
       subtotal: pricing.subtotal,
       tax: pricing.tax,
@@ -1130,7 +1123,7 @@ export class SupabaseRestaurantDataService implements IRestaurantDataService {
     if (supabase) {
       try {
         const { data, error } = await supabase
-          .from('restaurant_tables')
+          .from('DEMO_RESTAURANT_TABLES')
           .select('*')
           .eq('restaurant_id', restaurantId)
           .order('table_number');
@@ -1157,7 +1150,7 @@ export class SupabaseRestaurantDataService implements IRestaurantDataService {
     const supabase = getSupabaseClient();
     if (supabase) {
       try {
-        await supabase.from('restaurant_tables').update({ status }).eq('id', tableId);
+        await supabase.from('DEMO_RESTAURANT_TABLES').update({ status }).eq('id', tableId);
       } catch (err) {
         console.warn('[SupabaseService] updateTableFloorStatus error:', err);
       }
@@ -1187,7 +1180,7 @@ export class SupabaseRestaurantDataService implements IRestaurantDataService {
     if (supabase) {
       try {
         const { data, error } = await supabase
-          .from('menu_items')
+          .from('DEMO_MENU_ITEMS')
           .insert({
             restaurant_id: restaurantId,
             name: item.name,
@@ -1229,7 +1222,7 @@ export class SupabaseRestaurantDataService implements IRestaurantDataService {
     const supabase = getSupabaseClient();
     if (supabase) {
       try {
-        await supabase.from('menu_items').delete().eq('id', id);
+        await supabase.from('DEMO_MENU_ITEMS').delete().eq('id', id);
       } catch (err) {
         console.warn('[SupabaseService] deleteMenuItem error:', err);
       }
@@ -1296,7 +1289,7 @@ export class SupabaseRestaurantDataService implements IRestaurantDataService {
         // Query live orders & tables
         const [ordersRes, tablesRes, serviceRes] = await Promise.all([
           supabase.from('orders').select('*').order('created_at', { ascending: false }),
-          supabase.from('restaurant_tables').select('*').eq('restaurant_id', restaurantId),
+          supabase.from('DEMO_RESTAURANT_TABLES').select('*').eq('restaurant_id', restaurantId),
           supabase.from('service_requests').select('*').neq('status', 'COMPLETED'),
         ]);
 

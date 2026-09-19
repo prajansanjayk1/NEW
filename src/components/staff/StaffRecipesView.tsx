@@ -19,7 +19,7 @@ import {
 import { motion, AnimatePresence } from 'motion/react';
 import { Recipe, Ingredient, UserRole } from '../../types';
 import { inventoryService } from '../../services/inventoryService';
-import { MENU_ITEMS } from '../../data/mockData';
+import { DEMO_MENU_ITEMS } from '../../data/mockData';
 
 interface StaffRecipesViewProps {
   userRole: UserRole;

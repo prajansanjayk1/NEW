@@ -42,7 +42,7 @@ import {
 import { forecastService } from './forecastService';
 import { inventoryService } from '../inventoryService';
 import { isSupabaseConfigured, getSupabaseClient } from '../supabaseClient';
-import { MENU_ITEMS } from '../../data/mockData';
+import { DEMO_MENU_ITEMS } from '../../data/mockData';
 import { Order, Bill, RestaurantTable, ServiceRequest, PaymentRecord } from '../../types';
 
 export class AnalyticsService {
@@ -544,7 +544,7 @@ export class AnalyticsService {
       });
     });
 
-    const items: MenuItemPerformance[] = MENU_ITEMS.map((mi) => {
+    const items: MenuItemPerformance[] = DEMO_MENU_ITEMS.map((mi) => {
       const sales = itemSalesMap.get(mi.id) || {
         orders: mi.isHouseIcon ? 28 : (mi as any).isFeatured ? 16 : 8,
         units: mi.isHouseIcon ? 42 : (mi as any).isFeatured ? 24 : 12,
@@ -968,7 +968,7 @@ export class AnalyticsService {
         const client = getSupabaseClient();
         if (client) {
           const { data: dbOrders } = await client.from('orders').select('*').limit(200);
-          const { data: dbTables } = await client.from('restaurant_tables').select('*');
+          const { data: dbTables } = await client.from('DEMO_RESTAURANT_TABLES').select('*');
           const { data: dbRequests } = await client.from('service_requests').select('*');
           const { data: dbBills } = await client.from('bills').select('*');
           const { data: dbPayments } = await client.from('payments').select('*');

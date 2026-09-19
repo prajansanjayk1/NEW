@@ -19,7 +19,7 @@ import {
   HelpCircle
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
-import { INITIAL_TABLE_INFO } from '../data/mockData';
+import { DEMO_INITIAL_TABLE_INFO } from '../data/mockData';
 import { TableSession } from '../types';
 
 interface TableWelcomeViewProps {
@@ -50,12 +50,12 @@ export const TableWelcomeView: React.FC<TableWelcomeViewProps> = ({
   const [copied, setCopied] = useState(false);
   const [showVaultModal, setShowVaultModal] = useState(false);
 
-  const tableNum = session?.tableNumber || INITIAL_TABLE_INFO.tableNumber;
-  const token = session?.sessionToken || INITIAL_TABLE_INFO.sessionToken;
+  const tableNum = session?.tableNumber || DEMO_INITIAL_TABLE_INFO.tableNumber;
+  const token = session?.sessionToken || DEMO_INITIAL_TABLE_INFO.sessionToken;
   const activeCount = session?.participants.length || crewCount;
 
   const handleCopyWifi = () => {
-    navigator.clipboard.writeText(INITIAL_TABLE_INFO.wifiPassword).catch(() => {});
+    navigator.clipboard.writeText(DEMO_INITIAL_TABLE_INFO.wifiPassword).catch(() => {});
     setCopied(true);
     setTimeout(() => setCopied(false), 2500);
   };
@@ -155,7 +155,7 @@ export const TableWelcomeView: React.FC<TableWelcomeViewProps> = ({
               TABLE {tableNum}
             </h1>
             <span className="font-syne text-[11px] font-extrabold text-[#ffb86d] px-3 py-1 rounded-full bg-[#201f20]/90 border border-white/[0.08] uppercase tracking-wider backdrop-blur-sm">
-              {INITIAL_TABLE_INFO.zone}
+              {DEMO_INITIAL_TABLE_INFO.zone}
             </span>
           </div>
 
@@ -243,7 +243,7 @@ export const TableWelcomeView: React.FC<TableWelcomeViewProps> = ({
             </span>
           </div>
           <span className="font-mono text-[11px] text-[#ac897e]">
-            Session {INITIAL_TABLE_INFO.sessionToken}
+            Session {DEMO_INITIAL_TABLE_INFO.sessionToken}
           </span>
         </div>
 
@@ -254,7 +254,7 @@ export const TableWelcomeView: React.FC<TableWelcomeViewProps> = ({
               Branch Location
             </span>
             <span className="font-sans text-xs font-semibold text-[#e5e2e3] pt-1 leading-snug">
-              {INITIAL_TABLE_INFO.branch}
+              {DEMO_INITIAL_TABLE_INFO.branch}
             </span>
           </div>
           <div className="bg-[#201f20] p-3 rounded-2xl border border-white/[0.05] flex flex-col justify-between">
@@ -281,7 +281,7 @@ export const TableWelcomeView: React.FC<TableWelcomeViewProps> = ({
                 Table Wi-Fi Network
               </span>
               <span className="font-sans text-xs font-bold text-[#e5e2e3] truncate">
-                {INITIAL_TABLE_INFO.wifiSsid}
+                {DEMO_INITIAL_TABLE_INFO.wifiSsid}
               </span>
             </div>
           </div>

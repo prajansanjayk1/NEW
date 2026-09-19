@@ -1,6 +1,6 @@
 import { useState, useCallback, useMemo, useEffect } from 'react';
 import { Order, CartItem, OrderStatus, SessionParticipant } from '../types';
-import { INITIAL_ACTIVE_ORDER } from '../data/mockData';
+import { DEMO_INITIAL_ACTIVE_ORDER } from '../data/mockData';
 import { createOrderFromCart } from '../services/orderService';
 import { sessionStorageService } from '../services/sessionStorageService';
 import { realtimeService } from '../services/realtimeService';
@@ -8,7 +8,7 @@ import { inventoryService } from '../services/inventoryService';
 
 export const useOrders = (tableNumber: string = '18') => {
   const [orders, setOrders] = useState<Order[]>(() => {
-    return sessionStorageService.loadOrders() || [INITIAL_ACTIVE_ORDER];
+    return sessionStorageService.loadOrders() || [DEMO_INITIAL_ACTIVE_ORDER];
   });
 
   // Reusable live orders refresher
@@ -91,7 +91,7 @@ export const useOrders = (tableNumber: string = '18') => {
   }, []);
 
   const activeOrder = useMemo(() => {
-    return orders[orders.length - 1] || INITIAL_ACTIVE_ORDER;
+    return orders[orders.length - 1] || DEMO_INITIAL_ACTIVE_ORDER;
   }, [orders]);
 
   return {

@@ -1,6 +1,6 @@
-﻿import { StaffProfile, RestaurantTable } from '../types';
+import { StaffProfile, RestaurantTable } from '../types';
 import { DEFAULT_STAFF_MEMBERS } from './staffAuthService';
-import { RESTAURANT_TABLES } from './tableSessionService';
+import { DEMO_RESTAURANT_TABLES } from './tableSessionService';
 import { getSupabaseClient } from './supabaseClient';
 
 export interface TableHardwareConfig {
@@ -29,7 +29,7 @@ const STORAGE_KEYS = {
 };
 
 // Default seed hardware mappings
-const DEFAULT_TABLE_HARDWARE: TableHardwareConfig[] = RESTAURANT_TABLES.map((t) => ({
+const DEFAULT_TABLE_HARDWARE: TableHardwareConfig[] = DEMO_RESTAURANT_TABLES.map((t) => ({
   tableNumber: t.tableNumber,
   nfcTagUid: `NFC-TAB-${t.tableNumber}`,
   qrToken: `KW-${t.tableNumber}-SECURE`,
@@ -202,7 +202,7 @@ class HardwareService {
     if (supabase) {
       try {
         await supabase
-          .from('restaurant_tables')
+          .from('DEMO_RESTAURANT_TABLES')
           .update({
             qr_code_url: targetUrl,
             updated_at: new Date().toISOString(),

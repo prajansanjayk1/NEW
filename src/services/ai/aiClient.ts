@@ -8,7 +8,7 @@ import {
   AIUsageMetrics,
 } from '../../types/ai';
 import { RecommendationEngine } from './recommendationEngine';
-import { MENU_ITEMS, INITIAL_ACTIVE_ORDER } from '../../data/mockData';
+import { DEMO_MENU_ITEMS, DEMO_INITIAL_ACTIVE_ORDER } from '../../data/mockData';
 import { inventoryService } from '../inventoryService';
 
 class AIClient {
@@ -26,8 +26,8 @@ class AIClient {
       if (response.ok) {
         const data = await response.json();
         // Authoritative frontend validation on all outputs
-        const validatedRecs = RecommendationEngine.validateRecommendations(data.recommendations, MENU_ITEMS);
-        const validatedActions = RecommendationEngine.validateActions(data.actions, MENU_ITEMS);
+        const validatedRecs = RecommendationEngine.validateRecommendations(data.recommendations, DEMO_MENU_ITEMS);
+        const validatedActions = RecommendationEngine.validateActions(data.actions, DEMO_MENU_ITEMS);
         return {
           message: data.message,
           recommendations: validatedRecs,
@@ -243,7 +243,7 @@ class AIClient {
 
     // 4. Add to cart command
     if (q.includes('add') && (q.includes('cart') || q.includes('recommendation'))) {
-      const recs = RecommendationEngine.getRecommendations(MENU_ITEMS, { rawQuery: q });
+      const recs = RecommendationEngine.getRecommendations(DEMO_MENU_ITEMS, { rawQuery: q });
       const target = recs[0];
       if (target) {
         return {
@@ -269,7 +269,7 @@ class AIClient {
 
     // 5. Vegetarian / Allergen inquiry
     if (q.includes('vegetarian') || q.includes('veg') || q.includes('meat') || q.includes('vegan')) {
-      const vegItems = MENU_ITEMS.filter((i) => i.dietary?.vegetarian);
+      const vegItems = DEMO_MENU_ITEMS.filter((i) => i.dietary?.vegetarian);
       const recs = vegItems.map((item) => ({
         menuItemId: item.id,
         name: item.name,
@@ -295,7 +295,7 @@ class AIClient {
 
     // 6. Spicy / Heat Query
     if (q.includes('spicy') || q.includes('hot') || q.includes('flame') || q.includes('scoville')) {
-      const recs = RecommendationEngine.getRecommendations(MENU_ITEMS, { rawQuery: 'spicy' });
+      const recs = RecommendationEngine.getRecommendations(DEMO_MENU_ITEMS, { rawQuery: 'spicy' });
       return {
         message: `For serious heat lovers, I highly recommend our **Korean Fire Wings** (4 Flames, 125,000 SHU) with sweet fermented gochujang, and our signature **Firecracker Wings** (3 Flames, 85,000 SHU) with smoky chili glaze and burnt garlic.\n\nBoth pair sensationally with our Double Smoked Ranch to cool the burn!`,
         recommendations: recs,
@@ -313,7 +313,7 @@ class AIClient {
 
     // 7. Budget Query
     if (q.includes('500') || q.includes('budget') || q.includes('cost') || q.includes('cheap') || q.includes('price')) {
-      const budgetItems = MENU_ITEMS.filter((i) => i.price <= 300);
+      const budgetItems = DEMO_MENU_ITEMS.filter((i) => i.price <= 300);
       const recs = budgetItems.slice(0, 3).map((item) => ({
         menuItemId: item.id,
         name: item.name,
@@ -332,7 +332,7 @@ class AIClient {
 
     // 8. Group Query
     if (q.includes('3 people') || q.includes('group') || q.includes('friends') || q.includes('combo')) {
-      const combo = MENU_ITEMS.find((i) => i.category === 'Combos') || MENU_ITEMS[0];
+      const combo = DEMO_MENU_ITEMS.find((i) => i.category === 'Combos') || DEMO_MENU_ITEMS[0];
       const recs = [
         {
           menuItemId: combo.id,
@@ -365,7 +365,7 @@ class AIClient {
     }
 
     // General recommendations
-    const recs = RecommendationEngine.getRecommendations(MENU_ITEMS, { rawQuery: q });
+    const recs = RecommendationEngine.getRecommendations(DEMO_MENU_ITEMS, { rawQuery: q });
     return {
       message: `Welcome to Kings of Wings! Based on your preference, here are top picks fresh from our pit masters. Let me know if you'd like a specific heat level, dietary option, or pairing!`,
       recommendations: recs,

@@ -25,7 +25,7 @@ export interface DietaryInfo {
 export interface MenuItem {
   id: string;
   name: string;
-  category: 'Wings' | 'Combos' | 'Burgers' | 'Sides' | 'Dips' | 'Drinks';
+  category: string;
   description: string;
   price: number; // in INR (default / dine-in)
   dineInPrice?: number;

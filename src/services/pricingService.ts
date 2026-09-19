@@ -1,5 +1,5 @@
 import { CartItem, MenuItem } from '../types';
-import { MENU_ITEMS } from '../data/mockData';
+import { DEMO_MENU_ITEMS } from '../data/mockData';
 
 export interface CalculatedOrderPricing {
   subtotal: number; // in INR
@@ -31,7 +31,7 @@ export const calculateAuthoritativeOrder = (
   customMenuItems?: MenuItem[],
   gstPercent: number = 5
 ): CalculatedOrderPricing => {
-  const catalog = customMenuItems && customMenuItems.length > 0 ? customMenuItems : MENU_ITEMS;
+  const catalog = customMenuItems && customMenuItems.length > 0 ? customMenuItems : DEMO_MENU_ITEMS;
   const menuMap = new Map<string, MenuItem>(catalog.map((m) => [m.id, m]));
 
   let subtotal = 0;

@@ -17,7 +17,7 @@ import {
   RestaurantForecastData,
 } from './analyticsTypes';
 import { inventoryService } from '../inventoryService';
-import { MENU_ITEMS } from '../../data/mockData';
+import { DEMO_MENU_ITEMS } from '../../data/mockData';
 
 export class ForecastService {
   /**
@@ -262,7 +262,7 @@ export class ForecastService {
     const list: MenuItemForecast[] = [];
 
     // Prioritize key signature items
-    MENU_ITEMS.forEach((item) => {
+    DEMO_MENU_ITEMS.forEach((item) => {
       const sales = menuSalesMap.get(item.id);
       const totalUnits = sales?.unitsSold || (item.isHouseIcon ? 42 : (item as any).isFeatured ? 28 : 14);
       const historicalDailyAvg = Math.max(1, Math.round((totalUnits / Math.max(1, observationDays)) * 10) / 10);

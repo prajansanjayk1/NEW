@@ -1,5 +1,5 @@
 import { Order, CartItem, OrderStatus, SessionParticipant, TableSessionEvent } from '../types';
-import { INITIAL_TABLE_INFO } from '../data/mockData';
+import { DEMO_INITIAL_TABLE_INFO } from '../data/mockData';
 import { realtimeService } from './realtimeService';
 import { calculateAuthoritativeOrder } from './pricingService';
 import { auditService } from './auditService';
@@ -16,8 +16,8 @@ export const createOrderFromCart = (
   specialInstructions: string = '',
   sharedCrewCount: number = 3,
   participant?: SessionParticipant | null,
-  tableNumber: string = INITIAL_TABLE_INFO.tableNumber,
-  section: string = INITIAL_TABLE_INFO.section.toUpperCase(),
+  tableNumber: string = DEMO_INITIAL_TABLE_INFO.tableNumber,
+  section: string = DEMO_INITIAL_TABLE_INFO.section.toUpperCase(),
   idempotencyKey?: string
 ): Order => {
   // Authoritative server-side price verification (Phase 3 Requirement)

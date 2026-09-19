@@ -18,7 +18,7 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Order, CrewMember, SessionParticipant, BillSplitMode, Bill, PaymentRecord } from '../types';
-import { INITIAL_TABLE_INFO } from '../data/mockData';
+import { DEMO_INITIAL_TABLE_INFO } from '../data/mockData';
 import { billingService } from '../services/billingService';
 import { paymentService } from '../services/paymentService';
 import { paymentManager } from '../services/payment/paymentManager';
@@ -615,7 +615,7 @@ export const BillSplitModal: React.FC<BillSplitModalProps> = ({
                     Payment Successful
                   </h4>
                   <p className="font-sans text-xs text-[#ac897e]">
-                    Kings of Wings · {INITIAL_TABLE_INFO.branch}
+                    Kings of Wings · {DEMO_INITIAL_TABLE_INFO.branch}
                   </p>
                   <span className="font-['Syne',sans-serif] text-[10px] font-bold text-[#ffb86d] uppercase">
                     Ref: {lastPaymentRecord?.transactionReference || 'TXN-SETTLED-9840217'}

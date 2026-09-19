@@ -20,7 +20,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { MenuItem, CustomizationOption, CartItem, Order, ServiceRequestType } from '../types';
 import { AIMessage, AIRecommendation, AIAction, AIConversationContext } from '../types/ai';
 import { aiClient } from '../services/ai/aiClient';
-import { MENU_ITEMS } from '../data/mockData';
+import { DEMO_MENU_ITEMS } from '../data/mockData';
 
 interface WingConciergeModalProps {
   isOpen: boolean;
@@ -187,7 +187,7 @@ export const WingConciergeModal: React.FC<WingConciergeModalProps> = ({
   };
 
   const handleAddToCart = (rec: AIRecommendation) => {
-    const menuItem = MENU_ITEMS.find((m) => m.id === rec.menuItemId);
+    const menuItem = DEMO_MENU_ITEMS.find((m) => m.id === rec.menuItemId);
     if (!menuItem) return;
 
     const customization: CustomizationOption = {
@@ -301,7 +301,7 @@ export const WingConciergeModal: React.FC<WingConciergeModalProps> = ({
                     </span>
                     <div className="grid grid-cols-1 gap-2">
                       {msg.recommendations.map((rec) => {
-                        const menuItem = MENU_ITEMS.find((m) => m.id === rec.menuItemId);
+                        const menuItem = DEMO_MENU_ITEMS.find((m) => m.id === rec.menuItemId);
                         const isAdded = addedItemMap[rec.menuItemId];
                         return (
                           <div

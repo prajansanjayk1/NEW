@@ -6,7 +6,7 @@ import {
   SessionStatus 
 } from '../types';
 
-export const FLAGSHIP_RESTAURANT: Restaurant = {
+export const DEMO_FLAGSHIP_RESTAURANT: Restaurant = {
   id: 'rest-kow-blr-01',
   name: 'Kings of Wings',
   slug: 'kings-of-wings',
@@ -28,7 +28,7 @@ export const FLAGSHIP_RESTAURANT: Restaurant = {
   },
 };
 
-export const RESTAURANT_TABLES: RestaurantTable[] = [
+export const DEMO_RESTAURANT_TABLES: RestaurantTable[] = [
   { id: 'tbl-01', restaurantId: 'rest-kow-blr-01', tableNumber: '01', capacity: 2, zone: 'Window Bay', status: 'AVAILABLE' },
   { id: 'tbl-04', restaurantId: 'rest-kow-blr-01', tableNumber: '04', capacity: 4, zone: 'Central Dining', status: 'OCCUPIED' },
   { id: 'tbl-07', restaurantId: 'rest-kow-blr-01', tableNumber: '07', capacity: 6, zone: 'Main Floor', status: 'ORDERING' },
@@ -37,7 +37,7 @@ export const RESTAURANT_TABLES: RestaurantTable[] = [
   { id: 'tbl-21', restaurantId: 'rest-kow-blr-01', tableNumber: '21', capacity: 8, zone: 'Private Booths', status: 'BILL_REQUESTED' },
 ];
 
-export const INITIAL_TABLE_SESSION: TableSession = {
+export const DEMO_INITIAL_TABLE_SESSION: TableSession = {
   id: 'session-tbl18-live',
   restaurantId: 'rest-kow-blr-01',
   tableId: 'tbl-18',
@@ -92,16 +92,16 @@ export const INITIAL_TABLE_SESSION: TableSession = {
 
 export const tableSessionService = {
   getRestaurant(): Restaurant {
-    return FLAGSHIP_RESTAURANT;
+    return DEMO_FLAGSHIP_RESTAURANT;
   },
   getAllTables(): RestaurantTable[] {
-    return RESTAURANT_TABLES;
+    return DEMO_RESTAURANT_TABLES;
   },
   getTableById(id: string): RestaurantTable | undefined {
-    return RESTAURANT_TABLES.find((t) => t.id === id);
+    return DEMO_RESTAURANT_TABLES.find((t) => t.id === id);
   },
   getTableByNumber(tableNumber: string): RestaurantTable | undefined {
-    return RESTAURANT_TABLES.find((t) => t.tableNumber === tableNumber);
+    return DEMO_RESTAURANT_TABLES.find((t) => t.tableNumber === tableNumber);
   },
   joinTableSession(session: TableSession, displayName: string, avatarEmoji: string = '🍗') {
     const initials = displayName
@@ -157,7 +157,7 @@ export const tableSessionService = {
     return {
       isValid: true,
       session: {
-        ...INITIAL_TABLE_SESSION,
+        ...DEMO_INITIAL_TABLE_SESSION,
         sessionToken: cleanToken.startsWith('#') ? cleanToken : `#${cleanToken}`,
       },
     };
